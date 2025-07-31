@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Makinesi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Genel stil ayarları */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s ease; /* Tema geçişi için animasyon */
+        }
+
+        /* Aydınlık Mod Varsayılanları */
+        body {
+            background-color: #f0f2f5; /* Hafif gri arka plan */
+        }
+        .calculator {
+            background-color: #ffffff; /* Beyaz hesap makinesi arka planı */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0; /* Hafif kenarlık */
+        }
+        .display {
+            background-color: #2d3748; /* Koyu gri ekran arka planı */
+            color: #ffffff;
+        }
+        .button {
+            background-color: #edf2f7; /* Açık gri buton arka planı */
+            color: #2d3748; /* Koyu gri buton metni */
+        }
+        .button:hover {
+            background-color: #e2e8f0; /* Hover rengi */
+        }
+        .button.operator {
+            background-color: #4299e1; /* Mavi operatör butonu */
+            color: #ffffff;
+        }
+        .button.operator:hover {
+            background-color: #3182ce;
+        }
+        .button.equals {
+            background-color: #48bb78; /* Yeşil eşittir butonu */
+            color: #ffffff;
+        }
+        .button.equals:hover {
+            background-color: #38a169;
+        }
+        .button.clear, .button.backspace {
+            background-color: #fc8181; /* Kırmızı temizle butonu */
+            color: #ffffff;
+        }
+        .button.clear:hover, .button.backspace:hover {
+            background-color: #e53e3e;
+        }
+
+        /* Karanlık Mod Stilleri */
+        html.dark body {
+            background-color: #1a202c; /* Koyu arka plan */
+        }
+        html.dark .calculator {
+            background-color: #2d3748; /* Koyu hesap makinesi arka planı */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #4a5568;
+        }
+        html.dark .display {
+            background-color: #1a202c; /* Daha koyu ekran arka planı */
+            color: #e2e8f0; /* Açık metin */
+        }
+        html.dark .button {
+            background-color: #4a5568; /* Koyu gri buton arka planı */
+            color: #e2e8f0; /* Açık gri buton metni */
+        }
+        html.dark .button:hover {
+            background-color: #6a7a90; /* Hover rengi */
+        }
+        html.dark .button.operator {
+            background-color: #63b3ed; /* Daha açık mavi operatör butonu */
+            color: #1a202c;
+        }
+        html.dark .button.operator:hover {
+            background-color: #4299e1;
+        }
+        html.dark .button.equals {
+            background-color: #68d391; /* Daha açık yeşil eşittir butonu */
+            color: #1a202c;
+        }
+        html.dark .button.equals:hover {
+            background-color: #48bb78;
+        }
+        html.dark .button.clear, html.dark .button.backspace {
+            background-color: #f56565; /* Daha açık kırmızı temizle butonu */
+            color: #1a202c;
+        }
+        html.dark .button.clear:hover, html.dark .button.backspace:hover {
+            background-color: #e53e3e;
+        }
+
+        /* Hesap makinesi genel stil */
+        .calculator {
+            border-radius: 2rem; /* Daha yuvarlak köşeler */
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 360px; /* Sabit genişlik */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .display {
+            font-size: 2.5rem; /* Daha büyük yazı tipi */
+            text-align: right;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem; /* Yuvarlak ekran köşeleri */
+            min-height: 6rem; /* Minimum ekran yüksekliği */
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            word-break: break-all; /* Uzun sayıların taşmasını engelle */
+            overflow: hidden; /* Taşmayı gizle */
+        }
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem; /* Butonlar arası boşluk */
+        }
+        .button {
+            padding: 1.25rem 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 1rem; /* Yuvarlak buton köşeleri */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none; /* Metin seçmeyi engelle */
+            border: none;
+            outline: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .button:hover {
+            transform: translateY(-2px); /* Hafif yukarı kaydırma efekti */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+        }
+        .button.zero {
+            grid-column: span 2; /* Sıfır butonu iki sütun kapla */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) {
+            .calculator {
+                max-width: 95%;
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+            .display {
+                font-size: 2rem;
+                min-height: 5rem;
+                padding: 0.75rem 1rem;
+            }
+            .buttons-grid {
+                gap: 0.5rem;
+            }
+            .button {
+                padding: 1rem 0.5rem;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <!-- Tema değiştirme butonu, ekranın sol üstünde -->
+        <div class="flex justify-start items-center mb-2">
+            <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors duration-300 text-gray-800 dark:text-gray-200">
+                <!-- Aydınlık mod ikonu (varsayılan olarak gizli) -->
+                <span id="theme-icon-light" class="w-6 h-6 hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M17.66 6.34l1.41-1.41"/></svg>
+                </span>
+                <!-- Karanlık mod ikonu (varsayılan olarak görünür) -->
+                <span id="theme-icon-dark" class="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                </span>
+            </button>
+        </div>
+
+        <div id="display" class="display">0</div>
+        <div class="buttons-grid">
+            <button class="button clear">C</button>
+            <button class="button backspace">←</button>
+            <button class="button operator">%</button>
+            <button class="button operator">÷</button>
+
+            <button class="button">7</button>
+            <button class="button">8</button>
+            <button class="button">9</button>
+            <button class="button operator">×</button>
+
+            <button class="button">4</button>
+            <button class="button">5</button>
+            <button class="button">6</button>
+            <button class="button operator">-</button>
+
+            <button class="button">1</button>
+            <button class="button">2</button>
+            <button class="button">3</button>
+            <button class="button operator">+</button>
+
+            <button class="button zero">0</button>
+            <button class="button">.</button>
+            <button class="button equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM elemanlarını seçme
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.button');
+
+        // Hesaplama durumunu tutan değişkenler
+        let currentInput = '0'; // Ekrandaki mevcut giriş
+        let operator = null;    // Seçilen operatör
+        let previousInput = ''; // Önceki sayı
+        let resetDisplay = false; // Yeni bir sayı girildiğinde ekranı sıfırlamak için
+
+        // Ekrana değeri güncelleyen fonksiyon
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        // Buton tıklamalarını işleyen fonksiyon
+        function handleButtonClick(event) {
+            const buttonText = event.target.textContent;
+
+            // Sayı butonları
+            if (!isNaN(buttonText) || buttonText === '.') {
+                handleNumber(buttonText);
+            }
+            // Operatör butonları
+            else if (['+', '-', '×', '÷', '%'].includes(buttonText)) {
+                handleOperator(buttonText);
+            }
+            // Eşittir butonu
+            else if (buttonText === '=') {
+                calculate();
+            }
+            // Temizle butonu
+            else if (buttonText === 'C') {
+                clearCalculator();
+            }
+            // Geri silme butonu
+            else if (buttonText === '←') {
+                backspace();
+            }
+            updateDisplay();
+        }
+
+        // Sayı ve nokta girişini işleyen fonksiyon
+        function handleNumber(num) {
+            if (resetDisplay) {
+                currentInput = num;
+                resetDisplay = false;
+            } else {
+                if (num === '.' && currentInput.includes('.')) {
+                    return; // Zaten nokta varsa ekleme
+                }
+                if (currentInput === '0' && num !== '.') {
+                    currentInput = num; // İlk sayı 0 ise ve nokta değilse 0'ı kaldır
+                } else if (num === '.' && currentInput === '') {
+                    currentInput = '0.'; // Sayı başlamadan nokta girilirse başına 0 koy
+                } else {
+                    currentInput += num;
+                }
+            }
+        }
+
+        // Operatör girişini işleyen fonksiyon
+        function handleOperator(nextOperator) {
+            if (previousInput === '') {
+                previousInput = currentInput;
+            } else if (!resetDisplay) {
+                calculate(); // Önceki işlemi yap
+                previousInput = currentInput; // Sonucu yeni önceki sayı yap
+            }
+            operator = nextOperator;
+            resetDisplay = true; // Bir sonraki sayı için ekranı sıfırla
+        }
+
+        // Hesaplama fonksiyonu
+        function calculate() {
+            if (operator === null || resetDisplay) return; // Operatör yoksa veya zaten hesaplanmışsa çık
+
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            if (isNaN(prev) || isNaN(current)) {
+                currentInput = 'Hata';
+                return;
+            }
+
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '×':
+                    result = prev * current;
+                    break;
+                case '÷':
+                    if (current === 0) {
+                        currentInput = 'Sıfıra Bölünemez';
+                        operator = null;
+                        previousInput = '';
+                        resetDisplay = true;
+                        return;
+                    }
+                    result = prev / current;
+                    break;
+                case '%':
+                    // Yüzde işlemi için farklı yaklaşımlar olabilir.
+                    // Burada basılı olan sayının yüzdesini alıyoruz.
+                    // Örneğin: 50 + 10% -> 50 + (50 * 0.10)
+                    // veya sadece 10% -> 0.10
+                    if (previousInput !== '') {
+                        result = prev + (prev * (current / 100));
+                    } else {
+                        result = current / 100;
+                    }
+                    break;
+                default:
+                    return;
+            }
+            currentInput = result.toString();
+            operator = null;
+            previousInput = '';
+            resetDisplay = true; // Hesaplama sonrası ekranı sıfırla
+        }
+
+        // Hesap makinesini temizleyen fonksiyon
+        function clearCalculator() {
+            currentInput = '0';
+            operator = null;
+            previousInput = '';
+            resetDisplay = false;
+        }
+
+        // Geri silme fonksiyonu
+        function backspace() {
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0'; // Tek karakter kalırsa 0 yap
+            }
+            resetDisplay = false; // Geri silme sonrası sıfırlama durumunu kapat
+        }
+
+        // Tüm butonlara event listener ekleme
+        buttons.forEach(button => {
+            button.addEventListener('click', handleButtonClick);
+        });
+
+        // Klavyeden giriş desteği
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            if (!isNaN(key) || key === '.') {
+                handleNumber(key);
+            } else if (key === '+' || key === '-' || key === '*') {
+                handleOperator(key === '*' ? '×' : key); // Klavyeden * için × kullan
+            } else if (key === '/') {
+                handleOperator('÷'); // Klavyeden / için ÷ kullan
+            } else if (key === 'Enter' || key === '=') {
+                event.preventDefault(); // Enter tuşunun varsayılan davranışını engelle
+                calculate();
+            } else if (key === 'Backspace') {
+                backspace();
+            } else if (key === 'c' || key === 'C') {
+                clearCalculator();
+            }
+            updateDisplay();
+        });
+
+        // Tema değiştirme mantığı
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement; // <html> elementini seçiyoruz
+        const lightIcon = document.getElementById('theme-icon-light');
+        const darkIcon = document.getElementById('theme-icon-dark');
+
+        // Temayı ayarlayan fonksiyon
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.classList.add('dark');
+                lightIcon.classList.remove('hidden'); // Güneş ikonunu göster
+                darkIcon.classList.add('hidden');    // Ay ikonunu gizle
+            } else {
+                htmlElement.classList.remove('dark');
+                lightIcon.classList.add('hidden');   // Güneş ikonunu gizle
+                darkIcon.classList.remove('hidden'); // Ay ikonunu göster
+            }
+            localStorage.setItem('theme', theme); // Tercihi kaydet
+        }
+
+        // Kaydedilmiş tema tercihini kontrol et
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            // Kaydedilmiş tercih yoksa, sistem tercihini kontrol et
+            setTheme('dark');
+        } else {
+            setTheme('light'); // Varsayılan olarak aydınlık modu ayarla
+        }
+
+        // Tema değiştirme butonuna tıklama olayını dinle
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light'); // Temayı tersine çevir
+        });
+
+        // Uygulama yüklendiğinde ekranı güncelle
+        updateDisplay();
+
+    </script>
+</body>
+</html>
