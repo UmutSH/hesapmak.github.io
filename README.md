@@ -1,1 +1,1 @@
-karanlık ve açık mod teması olan basit bir hesap makinesi yaptım.
+Karanlık ve açık mod teması olan basit bir hesap makinesi yaptım.
